@@ -1,0 +1,38 @@
+// The PIR's signal pin will be connected to D2 on the arduino board
+// This will provide the board with the input signal to turn on the LED
+const int motionSensorPin = 2; 
+
+// And the LED's anode pin will receive said signal during detected motion
+const int ledPin = 8;
+
+void setup() {
+  Serial.begin(9600);  
+  // Initialise the PIR sensor pin as the project's input
+  pinMode(motionSensorPin, INPUT); 
+  // And the is initialised as output
+  pinMode(ledPin, OUTPUT);     
+}
+
+void loop() {
+   // Read PIR to detect motion signals
+  int motionState = digitalRead(motionSensorPin);
+  // Print the state of the PIR to the serial monitor
+  Serial.print("Motion Sensor State: ");
+  // And print the sensor state to the Serial Monitor
+  Serial.println(motionState); 
+  
+  if (motionState == HIGH) {
+    // When motion is deteced, turn the LED ON
+    digitalWrite(ledPin, HIGH); 
+    // Print the on LED status to the Serial Monitor
+    Serial.println("LED ON"); 
+  } else {
+     // Turn LED OFF when motion is no longer being detected
+    digitalWrite(ledPin, LOW); 
+     // Print the subsequent off LED state to the Serial Monitor
+    Serial.println("LED OFF");
+  }
+	// Short delay for loop, didn't make as responsive as I would have liked
+  	// Tried adding an interupt but it didn't seem to work as expected
+  delay(10); 
+}
