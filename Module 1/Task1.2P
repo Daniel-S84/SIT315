@@ -1,0 +1,51 @@
+// The PIR's signal pin will be connected to D2 on the arduino board
+// This will provide the board with the input signal to turn on the LED
+const int motionSensorPin = 2;
+
+// And the LED's anode pin will receive said signal during detected motion
+const int ledPin = 8;
+
+volatile bool motionDetected = false; // Flag to indicate motion detection
+volatile bool ledState = LOW; // Flag to indicate LED state
+
+void setup() {
+  Serial.begin(9600);  
+  // Initialise the PIR sensor pin as the project's input
+  pinMode(motionSensorPin, INPUT); 
+  // And the is initialised as output
+  pinMode(ledPin, OUTPUT); 
+
+  // Attaches an interrupt to the motion sensor pin
+  // The trigger is set to CHANGE (so when the sensor output switches back and forth form HIGH to LOW)
+  attachInterrupt(digitalPinToInterrupt(motionSensorPin), handleMotion, CHANGE);
+}
+
+void loop() {
+  // Print the states of the PIR sensor and LED to the Serial Monitor
+  Serial.print("Motion Sensor State: ");
+  Serial.println(digitalRead(motionSensorPin));
+  Serial.print("LED State: ");
+  Serial.println(ledState ? "ON" : "OFF");
+
+  // Update LED based on the flag set by the ISR
+  digitalWrite(ledPin, ledState);
+  
+  // Short delay to avoid flooding the Serial Monitor
+  delay(100);
+}
+
+// The new interrupt service routine
+void handleMotion() {
+  // Read PIR to detect motion signals
+  int motionState = digitalRead(motionSensorPin);
+
+  // Updates the LED state based on the motion sensor's input
+  if (motionState == HIGH) {
+    ledState = HIGH; // Turn LED ON
+  } else {
+    ledState = LOW;  // Turn LED OFF
+  }
+
+  // Set the flag to indicate motion was detected
+  motionDetected = true;
+}
